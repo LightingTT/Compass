@@ -1,0 +1,24 @@
+# Compiled source #
+###################
+*.class
+
+# Logs and databases #
+######################
+*.log
+
+# Gradle Files #
+################
+.gradle
+.gradletasknamecache
+.m2
+
+# Build output directies#
+#########################
+target/
+app/build
+build
+
+# AndroidStudio specific files/directories#
+###########################################
+local.properties
+.idea
