@@ -4,6 +4,7 @@ import com.example.compass.models.DistanceResponseModel;
 
 import java.util.Map;
 
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -18,6 +19,10 @@ public interface ApiService {
     Call<DistanceResponseModel> getDistanceModelList(@Query("origins") String origins,
                                                   @Query("destinations") String destinations,
                                                   @Query("key") String key);
+    @GET("maps/api/distancematrix/json")
+    Single<DistanceResponseModel> getDistanceModelListRx(@Query("origins") String origins,
+                                                         @Query("destinations") String destinations,
+                                                         @Query("key") String key);
 
 
 }
