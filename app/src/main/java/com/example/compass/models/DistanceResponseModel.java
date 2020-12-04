@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-
+/*
+    Main model
+ */
 public class DistanceResponseModel {
 
     @SerializedName("destination_addresses")

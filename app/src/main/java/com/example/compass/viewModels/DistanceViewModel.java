@@ -28,8 +28,8 @@ public class DistanceViewModel extends ViewModel {
     String getSecretValue;
 
     public DistanceViewModel(Context context) {
-        getSecretValue = context.getString(R.string.google_maps_api_key);
         this.context = context;
+        getSecretValue = context.getString(R.string.google_maps_api_key);
         distanceRepository = DistanceRepository.getInstance();
         distanceLiveData = distanceRepository.getDistanceResponseModel();
         distanceRepository.distanceResponseAPI("sikorki, szczecin", "wojska polskiego 100, szczecin", getSecretValue);

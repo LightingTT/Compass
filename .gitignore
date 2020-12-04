@@ -22,3 +22,4 @@ build
 ###########################################
 local.properties
 .idea
+app/src/main/res/values/secrets.xml
