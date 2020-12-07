@@ -12,6 +12,11 @@ public class Distance {
     @Expose
     private Integer value;
 
+    public Distance(String text, Integer value) {
+        this.text = text;
+        this.value = value;
+    }
+
     public String getText() {
         return text;
     }

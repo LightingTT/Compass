@@ -12,6 +12,10 @@ public class Duration {
     @Expose
     private Integer value;
 
+    public Duration(String text, Integer value) {
+        this.text = text;
+        this.value = value;
+    }
 
     public String getText() {
         return text;
