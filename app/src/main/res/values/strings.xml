@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Compass</string>
+    <string name="city_road_area">city, road, area..</string>
+    <string name="set_destination">Set destination</string>
 </resources>

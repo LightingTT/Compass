@@ -15,6 +15,10 @@ public class Row {
         return elements;
     }
 
+    public Row(List<Element> elements) {
+        this.elements = elements;
+    }
+
     @Override
     public String toString() {
         return "Row{" +

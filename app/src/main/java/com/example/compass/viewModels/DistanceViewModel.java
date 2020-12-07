@@ -2,6 +2,9 @@ package com.example.compass.viewModels;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,29 +13,41 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.LongDef;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.compass.BuildConfig;
+import com.example.compass.MainActivity;
 import com.example.compass.R;
 import com.example.compass.models.DistanceResponseModel;
 import com.example.compass.models.Element;
 import com.example.compass.repository.DistanceRepository;
 
-public class DistanceViewModel extends ViewModel {
+import static android.content.ContentValues.TAG;
+import static io.reactivex.internal.util.NotificationLite.getValue;
+
+public class DistanceViewModel extends AndroidViewModel {
+
 
     private LiveData<DistanceResponseModel> distanceLiveData;
     private DistanceRepository distanceRepository;
     private Context context;
-    String getSecretValue;
+    String secretValue = "";
+    String destinations = "Szczecin";
 
-    public DistanceViewModel(Context context) {
+    public DistanceViewModel(Application context) {
+        super(context);
         this.context = context;
-        getSecretValue = context.getString(R.string.google_maps_api_key);
+        secretValue = context.getString(R.string.google_maps_api_key);
         distanceRepository = DistanceRepository.getInstance();
         distanceLiveData = distanceRepository.getDistanceResponseModel();
-        distanceRepository.distanceResponseAPI("sikorki, szczecin", "wojska polskiego 100, szczecin", getSecretValue);
+
+        //First argument is your origin, second is your destination(hardcoded for now). Third is API key.
+        distanceRepository.distanceResponseAPI(getCurrentCoordinate(), destinations, secretValue);
     }
 
     public LiveData<DistanceResponseModel> getDistanceResponseModel() {
@@ -45,21 +60,23 @@ public class DistanceViewModel extends ViewModel {
     }
 
     private Location getCurrentLocation() {
-        int permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) return null;
-
-        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        return location;
-    }
-
-    private String getCurrentCoordinates() {
-        Location location = getCurrentLocation();
-        if (location != null) {
-            return location.getLatitude() + "," + location.getLongitude();
+        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(context,  Manifest.permission.ACCESS_FINE_LOCATION);
+            return null;
         }
-        return "";
+
+        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        return lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
+    private String getCurrentCoordinate() {
+        Location location = getCurrentLocation();
+        if (location == null) return "";
+        return location.getLatitude()+","+ location.getLongitude();
+    }
+
+    //TODO
+    //requestLocationUpdates for periodic updates
+    //locationListener
+    //Edit text with button listener
 }

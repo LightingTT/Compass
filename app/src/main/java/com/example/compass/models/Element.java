@@ -15,15 +15,21 @@ public class Element {
     @Expose
     private String status;
 
-        public Distance getDistance() {
-            return distance;
-        }
-        public Duration getDuration() {
-            return duration;
-        }
-        public String getStatus() {
-            return status;
-        }
+    public Element(Distance distance, Duration duration, String status) {
+        this.distance = distance;
+        this.duration = duration;
+        this.status = status;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+    public Duration getDuration() {
+        return duration;
+    }
+    public String getStatus() {
+        return status;
+    }
 
     @Override
     public String toString() {
