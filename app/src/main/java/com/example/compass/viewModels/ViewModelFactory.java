@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
     private Application mApplication;
-    private String mParam;
 
     public ViewModelFactory(Application mApplication) {
         this.mApplication = mApplication;

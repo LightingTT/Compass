@@ -1,28 +1,11 @@
 package com.example.compass;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.compass.models.Distance;
 import com.example.compass.models.DistanceResponseModel;
-import com.example.compass.models.Duration;
-import com.example.compass.models.Element;
-import com.example.compass.models.Row;
-import com.example.compass.repository.DistanceRepository;
 import com.example.compass.viewModels.DistanceViewModel;
 import com.example.compass.viewModels.ViewModelFactory;
 
