@@ -3,6 +3,8 @@ package com.example.compass.requests;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.compass.models.DistanceResponseModel;
+
+import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -26,27 +28,10 @@ public class DistanceApiClient {
         return distanceLiveData;
     }
 
-    public void distanceResponseAPI(String origins, String destinations, String key)
+    public Single<DistanceResponseModel> distanceResponseAPI(String origins, String destinations, String key)
     {
-        ServiceGenerator.getApiService()
-                .getDistanceModelListRx(origins, destinations, key)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(new SingleObserver<DistanceResponseModel>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onSuccess(DistanceResponseModel value) {
-                        distanceLiveData.postValue(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-                });
+      return ServiceGenerator.getApiService()
+                .getDistanceModelListRx(origins, destinations, key);
 
     }
 }
