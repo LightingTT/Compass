@@ -7,15 +7,15 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
-    private Application mApplication;
+    private MyLocationService myLocationService;
 
-    public ViewModelFactory(Application mApplication) {
-        this.mApplication = mApplication;
+    public ViewModelFactory(MyLocationService myLocationService) {
+        this.myLocationService = myLocationService;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new DistanceViewModel(mApplication);
+        return (T) new DistanceViewModel(myLocationService);
     }
 }

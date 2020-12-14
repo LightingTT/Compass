@@ -1,63 +1,97 @@
 package com.example.compass.viewModels;
 
-import android.Manifest;
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.PackageManager;
+
 import android.location.Location;
-import android.location.LocationManager;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.AndroidViewModel;
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
-import com.example.compass.R;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import com.example.compass.models.DistanceResponseModel;
 import com.example.compass.models.Element;
 import com.example.compass.repository.DistanceRepository;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
-public class DistanceViewModel extends AndroidViewModel {
+import static android.content.ContentValues.TAG;
 
+public class DistanceViewModel extends ViewModel {
 
-    private LiveData<DistanceResponseModel> distanceLiveData;
-    private DistanceRepository distanceRepository;
-    private final Context context;
+    private final MutableLiveData<DistanceResponseModel> distanceLiveData = new MutableLiveData<>();
+    private final DistanceRepository distanceRepository;
+    private final MyLocationService myLocationService;
+    private String destinations = "";
 
-    public DistanceViewModel(Application context) {
-        super(context);
-        this.context = context;
-        String secretValue = context.getString(R.string.google_maps_api_key);
+    public DistanceViewModel(MyLocationService myLocationService) {
+        this.myLocationService = myLocationService;
         distanceRepository = DistanceRepository.getInstance();
-        distanceLiveData = distanceRepository.getDistanceResponseModel();
 
-        //First argument is your origin, second is your destination(hardcoded for now). Third is API key.
-        String destinations = "Szczecin";
-        distanceRepository.distanceResponseAPI(getCurrentCoordinate(), destinations, secretValue);
+        pullLocation();
     }
 
     public LiveData<DistanceResponseModel> getDistanceResponseModel() {
         return distanceLiveData;
     }
 
-    public String showDestination(DistanceResponseModel distanceResponseModel){
-        Element element = distanceResponseModel.getRows().get(0).getElements().get(0);
-        return element.getDistance().getText() + "\n" + element.getDuration().getText();
+    public void startPullLocation() {
+        myLocationService.start();
     }
 
-    private Location getCurrentLocation() {
-        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(context,  Manifest.permission.ACCESS_FINE_LOCATION);
-            return null;
-        }
+    private void pullLocation(){
 
-        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-        return lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        myLocationService.getLocation()
+                .flatMapSingle(new Function<Location, Single<DistanceResponseModel>>() {
+                    @Override
+                    public Single<DistanceResponseModel> apply(@NonNull Location location) throws Exception {
+                        return distanceRepository.distanceResponseAPI(location.getLatitude() + "," + location.getLongitude(), getDestinations(), "my_google_api_key");
+                    }
+                })
+
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.io())
+                .subscribe(new Subscriber<DistanceResponseModel>() {
+            @Override
+            public void onSubscribe(Subscription s) {
+                Log.d(TAG, "onSubscribe in DistanceViewModel called. ");
+            }
+
+            @Override
+            public void onNext(DistanceResponseModel distanceResponseModel) {
+                distanceLiveData.postValue(distanceResponseModel);
+                Log.d(TAG, "onNext in DistanceViewModel called. ");
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.d(TAG, "ERROR in DistanceViewModel called. " + t.toString());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete in DistanceViewModel called. ");
+            }
+        });
     }
 
-    private String getCurrentCoordinate() {
-        Location location = getCurrentLocation();
-        if (location == null) return "";
-        return location.getLatitude()+","+ location.getLongitude();
+    public void setDestination(String destination){
+        this.destinations = destination;
     }
+
+    private String getDestinations(){
+        return destinations;
+    }
+
+
+
+    public void onPermissionGranted() {
+        myLocationService.updatePermission(true);
+    }
+
 
     //TODO
     //requestLocationUpdates for periodic updates

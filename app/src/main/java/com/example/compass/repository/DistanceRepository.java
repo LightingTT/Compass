@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData;
 import com.example.compass.models.DistanceResponseModel;
 import com.example.compass.requests.DistanceApiClient;
 
+import io.reactivex.Single;
+
 public class DistanceRepository {
     private static DistanceRepository instance;
     private DistanceApiClient distanceApiClient;
@@ -20,8 +22,8 @@ public class DistanceRepository {
         distanceApiClient = DistanceApiClient.getInstance();
     }
 
-    public void distanceResponseAPI(String origins, String destinations, String key) {
-        distanceApiClient.distanceResponseAPI(origins, destinations, key);
+    public Single<DistanceResponseModel> distanceResponseAPI(String origins, String destinations, String key) {
+        return distanceApiClient.distanceResponseAPI(origins, destinations, key);
     }
 
     public LiveData<DistanceResponseModel> getDistanceResponseModel() {
