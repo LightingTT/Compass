@@ -1,31 +1,24 @@
 package com.example.compass.viewModels;
 
-import android.Manifest;
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.PackageManager;
+
 import android.location.Location;
-import android.location.LocationManager;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.AndroidViewModel;
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import com.example.compass.R;
 import com.example.compass.models.DistanceResponseModel;
 import com.example.compass.models.Element;
 import com.example.compass.repository.DistanceRepository;
-
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+
+import static android.content.ContentValues.TAG;
 
 public class DistanceViewModel extends ViewModel {
 
@@ -54,31 +47,33 @@ public class DistanceViewModel extends ViewModel {
         myLocationService.getLocation()
                 .flatMapSingle(new Function<Location, Single<DistanceResponseModel>>() {
                     @Override
-                    public Single<DistanceResponseModel> apply(Location location) throws Exception {
-                        return distanceRepository.distanceResponseAPI(location.getLatitude() + "," + location.getLongitude(), getDestinations(), "AIzaSyA-HI74tKvtYIivojxBq24_qW81vTGIwHU");
+                    public Single<DistanceResponseModel> apply(@NonNull Location location) throws Exception {
+                        return distanceRepository.distanceResponseAPI(location.getLatitude() + "," + location.getLongitude(), getDestinations(), "my_google_api_key");
                     }
                 })
-                .subscribeOn(Schedulers.io())
+
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.io())
                 .subscribe(new Subscriber<DistanceResponseModel>() {
             @Override
             public void onSubscribe(Subscription s) {
-
+                Log.d(TAG, "onSubscribe in DistanceViewModel called. ");
             }
 
             @Override
             public void onNext(DistanceResponseModel distanceResponseModel) {
                 distanceLiveData.postValue(distanceResponseModel);
+                Log.d(TAG, "onNext in DistanceViewModel called. ");
             }
 
             @Override
             public void onError(Throwable t) {
-
+                Log.d(TAG, "ERROR in DistanceViewModel called. " + t.toString());
             }
 
             @Override
             public void onComplete() {
-
+                Log.d(TAG, "onComplete in DistanceViewModel called. ");
             }
         });
     }
@@ -92,26 +87,11 @@ public class DistanceViewModel extends ViewModel {
     }
 
 
-    public String showDestination(DistanceResponseModel distanceResponseModel){
-        Element element = distanceResponseModel.getRows().get(0).getElements().get(0);
-        return element.getDistance().getText() + "\n" + element.getDuration().getText();
+
+    public void onPermissionGranted() {
+        myLocationService.updatePermission(true);
     }
 
-//    private Location getCurrentLocation() {
-//        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ContextCompat.checkSelfPermission(context,  Manifest.permission.ACCESS_FINE_LOCATION);
-//            return null;
-//        }
-//
-//        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-//        return lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//    }
-//
-//    private String getCurrentCoordinate() {
-//        Location location = getCurrentLocation();
-//        if (location == null) return "";
-//        return location.getLatitude()+","+ location.getLongitude();
-//    }
 
     //TODO
     //requestLocationUpdates for periodic updates
