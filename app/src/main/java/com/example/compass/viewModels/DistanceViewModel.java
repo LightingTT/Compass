@@ -42,18 +42,18 @@ public class DistanceViewModel extends ViewModel {
         myLocationService.start();
     }
 
+
     private void pullLocation(){
 
         myLocationService.getLocation()
                 .flatMapSingle(new Function<Location, Single<DistanceResponseModel>>() {
                     @Override
                     public Single<DistanceResponseModel> apply(@NonNull Location location) throws Exception {
-                        return distanceRepository.distanceResponseAPI(location.getLatitude() + "," + location.getLongitude(), getDestinations(), "my_google_api_key");
+                        return distanceRepository.distanceResponseAPI(location.getLatitude() + "," + location.getLongitude(), getDestinations() , destinations)
+                                .subscribeOn(Schedulers.io());
                     }
                 })
-
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                //When you subscribe to an Observable, always create a new instance
                 .subscribe(new Subscriber<DistanceResponseModel>() {
             @Override
             public void onSubscribe(Subscription s) {
@@ -68,6 +68,8 @@ public class DistanceViewModel extends ViewModel {
 
             @Override
             public void onError(Throwable t) {
+                Log.e("YOUR_APP_LOG_TAG", "I got an error:", t);
+
                 Log.d(TAG, "ERROR in DistanceViewModel called. " + t.toString());
             }
 

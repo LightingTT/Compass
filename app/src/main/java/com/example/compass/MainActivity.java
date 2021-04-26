@@ -40,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
         editText = findViewById(R.id.editText_id);
         button = findViewById(R.id.button_id);
 
-///        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-////        return lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
         LocationManager lm = getSystemService(LocationManager.class);
         MyLocationService myLocationService = new MyLocationServiceClass(this, lm, false);
 
@@ -54,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         distanceViewModel.getDistanceResponseModel().observe(this, new Observer<DistanceResponseModel>() {
             @Override
             public void onChanged(DistanceResponseModel distanceResponseModel) {
+                /**/
                 textView.setText(showDestination(distanceResponseModel));
             }
         });
