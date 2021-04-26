@@ -20,6 +20,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.PublishSubject;
 
@@ -27,8 +29,8 @@ import static android.content.ContentValues.TAG;
 
 public class MyLocationServiceClass implements MyLocationService {
 
-
-    PublishProcessor<Location> stream = PublishProcessor.create(); // Creates and returns a new PublishProcessor
+    //Observable.
+    PublishProcessor<Location> stream = PublishProcessor.create();
     LocationListener listener = new LocationListener() {
         @Override
         public void onLocationChanged(@NonNull Location location) {
@@ -89,7 +91,6 @@ public class MyLocationServiceClass implements MyLocationService {
     public void start() {
         long minTimeMs = 10000;
         float minDistanceM = 5.5F;
-
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 

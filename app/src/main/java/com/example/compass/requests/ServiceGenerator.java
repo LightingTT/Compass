@@ -9,11 +9,11 @@ public class ServiceGenerator {
     private final static String BASE_URL = "https://maps.googleapis.com/";
 
     private static Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
+                                                            .baseUrl(BASE_URL)
+                                                            .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 
     private static Retrofit retrofit = retrofitBuilder
-            .addConverterFactory(GsonConverterFactory.create()).build();
+                                            .addConverterFactory(GsonConverterFactory.create()).build();
 
     private static ApiService apiService = retrofit.create(ApiService.class);
 

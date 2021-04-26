@@ -32,6 +32,5 @@ public class DistanceApiClient {
     {
       return ServiceGenerator.getApiService()
                 .getDistanceModelListRx(origins, destinations, key);
-
     }
 }
