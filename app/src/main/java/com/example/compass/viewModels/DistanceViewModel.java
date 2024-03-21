@@ -95,6 +95,10 @@ public class DistanceViewModel extends ViewModel {
     }
 
 
+    public void locationListener() {
+        myLocationService.updatePermission(true);
+    }
+
     //TODO
     //requestLocationUpdates for periodic updates
     //locationListener
